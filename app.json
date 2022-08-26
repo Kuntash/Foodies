@@ -1,8 +1,9 @@
 {
   "expo": {
     "name": "Foodies",
-    "slug": "Foodies",
+    "slug": "foodies",
     "version": "1.0.0",
+    "owner": "kun_tash",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
