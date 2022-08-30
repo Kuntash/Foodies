@@ -30,6 +30,7 @@ import {
 import { theme } from '../theme';
 import { ThemeContext } from '../contexts/ThemeProvider';
 import DishItem from './DishItem';
+import { useModalAnimation } from '../hooks/useModalAnimation';
 
 const FULL_HEIGHT = Dimensions.get('screen').height;
 const FULL_WIDTH = Dimensions.get('window').width;
@@ -42,34 +43,17 @@ type IProps = {
 const ANIMATION_DURATION = 500;
 const RestroModal = ({ restaurant, position, closeRestro }: IProps) => {
   const { colorMode } = useContext(ThemeContext);
-  const modalHeight = useSharedValue(position.height);
-  const modalWidth = useSharedValue(position.width);
-  const modalX = useSharedValue(position.pageX);
-  const modalY = useSharedValue(position.pageY);
-  const buttonOpacity = useSharedValue(0);
-  const modalAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      width: modalWidth.value,
-      height: modalHeight.value,
-      top: modalY.value,
-      left: modalX.value,
-    };
-  }, [modalHeight, modalWidth, modalY, modalX]);
-  const mainImageHeight = useSharedValue(100);
-  const mainImageAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      height: `${mainImageHeight.value}%`,
-    };
-  }, [mainImageHeight]);
+  /* Custom hook for modal animation */
+  const [
+    modalAnimatedStyle,
+    mainImageAnimatedStyle,
+    initializeModal,
+    handleBeginTap,
+    handleOnMenuScroll,
+  ] = useModalAnimation(position, ANIMATION_DURATION);
+
   useEffect(() => {
-    modalHeight.value = withTiming(FULL_HEIGHT, {
-      duration: ANIMATION_DURATION,
-    });
-    modalWidth.value = withTiming(FULL_WIDTH, { duration: ANIMATION_DURATION });
-    modalX.value = withTiming(0, { duration: ANIMATION_DURATION });
-    modalY.value = withTiming(0, { duration: ANIMATION_DURATION });
-    buttonOpacity.value = withTiming(1, { duration: ANIMATION_DURATION });
-    mainImageHeight.value = withTiming(50, { duration: ANIMATION_DURATION });
+    initializeModal();
   }, []);
   return (
     <Animated.View
@@ -84,28 +68,8 @@ const RestroModal = ({ restaurant, position, closeRestro }: IProps) => {
         style={[styles.mainImage, mainImageAnimatedStyle]}
         resizeMode="cover"
       />
-      <SafeAreaView />
       <TapGestureHandler
-        onBegan={(event) => {
-          modalHeight.value = withTiming(position.height, {
-            duration: ANIMATION_DURATION,
-          });
-          modalWidth.value = withTiming(position.width, {
-            duration: ANIMATION_DURATION,
-          });
-          modalX.value = withTiming(position.pageX, {
-            duration: ANIMATION_DURATION,
-          });
-          modalY.value = withTiming(position.pageY, {
-            duration: ANIMATION_DURATION,
-          });
-          buttonOpacity.value = withTiming(0, {
-            duration: ANIMATION_DURATION,
-          });
-          mainImageHeight.value = withTiming(100, {
-            duration: ANIMATION_DURATION,
-          });
-        }}
+        onBegan={handleBeginTap}
         onEnded={(event) => {
           setTimeout(() => {
             closeRestro();
@@ -119,10 +83,15 @@ const RestroModal = ({ restaurant, position, closeRestro }: IProps) => {
           <Ionicons name="close" size={24} color="black" />
         </Animated.View>
       </TapGestureHandler>
-      <Animated.ScrollView contentContainerStyle={{ padding: 20 }}>
-        {restaurant.dishes.map((dish, index) => (
-          <DishItem key={dish.id} dish={dish} />
-        ))}
+      <Animated.ScrollView
+        onScroll={handleOnMenuScroll}
+        scrollEventThrottle={16}
+      >
+        <Animated.View style={{ padding: 20 }}>
+          {restaurant.dishes.map((dish, index) => (
+            <DishItem key={dish.id} dish={dish} />
+          ))}
+        </Animated.View>
       </Animated.ScrollView>
     </Animated.View>
   );

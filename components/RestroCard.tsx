@@ -2,69 +2,39 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import React, { useContext, useRef } from 'react';
 import { ThemeContext } from '../contexts/ThemeProvider';
 import { theme } from '../theme';
-import Animated, {
-  measure,
-  useAnimatedGestureHandler,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import {
-  Gesture,
-  GestureDetector,
   LongPressGestureHandler,
-  LongPressGestureHandlerEventPayload,
-  LongPressGestureHandlerGestureEvent,
   TapGestureHandler,
-  TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import { Position, Restaurant } from '../types';
+import { useCardAnimation } from '../hooks/useCardAnimation';
 
 type IProps = {
   restaurant: Restaurant;
   openRestro: (restaurant: Restaurant, position: Position) => void;
 };
 const RestroCard = ({ restaurant, openRestro }: IProps) => {
-  const cardPressed = useSharedValue(0);
   const { colorMode } = useContext(ThemeContext);
   const restroCardRef = useRef<Animated.View | null>(null);
 
-  const handleLongPressGesture =
-    useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>({
-      onStart: (event, ctx) => {
-        cardPressed.value = 1;
-      },
-      onActive(event, context) {
-        cardPressed.value = 1;
-      },
-      onFinish(event, context, isCanceledOrFailed) {
-        cardPressed.value = 0;
-      },
+  /* Custom hook for shared transition animation */
+  const [cardAnimationStyle, handleLongPressGesture, handleTapGesture] =
+    useCardAnimation(restroCardRef);
+
+  const handleOnGestureEnd = () => {
+    restroCardRef.current.measure((x, y, width, height, pageX, pageY) => {
+      const position = { x, y, width, height, pageX, pageY };
+      openRestro(restaurant, position);
     });
-
-  const cardAnimationStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { scale: cardPressed.value == 1 ? withSpring(0.9) : withSpring(1) },
-      ],
-    };
-  }, [cardPressed]);
-
+  };
   return (
     <LongPressGestureHandler
       onGestureEvent={handleLongPressGesture}
       shouldCancelWhenOutside
       minDurationMs={50}
       maxDist={1}
-      onEnded={(event) => {
-        console.log('Gesture ended');
-        restroCardRef.current.measure((x, y, width, height, pageX, pageY) => {
-          const position = { x, y, width, height, pageX, pageY };
-          openRestro(restaurant, position);
-        });
-      }}
+      onEnded={handleOnGestureEnd}
     >
       <Animated.View
         ref={restroCardRef}
@@ -75,14 +45,8 @@ const RestroCard = ({ restaurant, openRestro }: IProps) => {
         ]}
       >
         <TapGestureHandler
-          onEnded={() => {
-            restroCardRef.current.measure(
-              (x, y, width, height, pageX, pageY) => {
-                const position = { x, y, width, height, pageX, pageY };
-                openRestro(restaurant, position);
-              }
-            );
-          }}
+          onGestureEvent={handleTapGesture}
+          onEnded={handleOnGestureEnd}
         >
           <Animated.View>
             <Image source={restaurant.source} style={styles.image} />

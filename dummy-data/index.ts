@@ -42,6 +42,54 @@ export const restaurants: Restaurant[] = [
           uri: 'https://feenix.co.in/wp-content/uploads/2018/02/140418-Web-Pizza_NonVegSuperme.jpg',
         },
       },
+      {
+        id: 3,
+        category: ['veg-pizza'],
+        description:
+          'Loaded with a delicious creamy tomato pasta topping, green capsicum, crunchy red and yellow bell peppers and black olives',
+        isVeg: true,
+        name: 'Creamy Tomato Pasta Pizza - Veg',
+        price: 489,
+        source: {
+          uri: 'https://images.dominos.co.in/new_veggie_paradise.jpg',
+        },
+      },
+      {
+        id: 4,
+        category: ['non-veg-pizza'],
+        description:
+          'Supreme combination of black olives, onion, capsicum, grilled mushroom, pepper barbecue chicken, peri-peri chicken & grilled chicken rashers',
+        isVeg: false,
+        name: 'Non Veg Supreme',
+        price: 629,
+        source: {
+          uri: 'https://feenix.co.in/wp-content/uploads/2018/02/140418-Web-Pizza_NonVegSuperme.jpg',
+        },
+      },
+      {
+        id: 5,
+        category: ['veg-pizza'],
+        description:
+          'Loaded with a delicious creamy tomato pasta topping, green capsicum, crunchy red and yellow bell peppers and black olives',
+        isVeg: true,
+        name: 'Creamy Tomato Pasta Pizza - Veg',
+        price: 489,
+        source: {
+          uri: 'https://images.dominos.co.in/new_veggie_paradise.jpg',
+        },
+      },
+      {
+        id: 6,
+        category: ['non-veg-pizza'],
+        description:
+          'Supreme combination of black olives, onion, capsicum, grilled mushroom, pepper barbecue chicken, peri-peri chicken & grilled chicken rashers',
+        isVeg: false,
+        name: 'Non Veg Supreme',
+        price: 629,
+        source: {
+          uri: 'https://feenix.co.in/wp-content/uploads/2018/02/140418-Web-Pizza_NonVegSuperme.jpg',
+        },
+      },
     ],
   },
   {

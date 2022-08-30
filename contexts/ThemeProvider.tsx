@@ -10,7 +10,7 @@ export const ThemeContext = createContext<ThemeContextInterface>({
 });
 const ThemeProvider = ({ children }) => {
   const [colorMode, setColorMode] =
-    useState<ThemeContextInterface['colorMode']>('dark');
+    useState<ThemeContextInterface['colorMode']>('light');
 
   return (
     <ThemeContext.Provider value={{ colorMode, setColorMode }}>
